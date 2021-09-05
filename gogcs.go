@@ -4,6 +4,7 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
+	"google.golang.org/api/iterator"
 	"io"
 	"io/ioutil"
 )
@@ -13,6 +14,7 @@ type GoGCSClient interface {
 	DownloadFiles(downloads []DownloadedFile) error
 	RemoveFiles(objectNames []string) error
 	CloneFile(sourceName, destinationName string, isRemoveSource bool) error
+	ListFile(path string) ([]string, error)
 }
 
 type GoGSCClient struct {
@@ -155,4 +157,29 @@ func (s GoGSCClient) CloneFile(sourceName, destinationName string, isRemoveSourc
 		return s.removeFile(sourceName)
 	}
 	return nil
+}
+
+func (s GoGSCClient) ListFile(path string) ([]string, error) {
+	defer func() {
+		err := s.Client.Close()
+		if err != nil {
+			panic(fmt.Errorf("error during closing connection: %v", err))
+		}
+	}()
+	q := storage.Query{
+		Prefix:    path,
+	}
+	var names []string
+	it := s.Client.Bucket(s.Bucket).Objects(s.Context, &q)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		names = append(names, attrs.Name)
+	}
+	return names, nil
 }
