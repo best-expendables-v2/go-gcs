@@ -1,4 +1,4 @@
-module github.com:best-expendables-v2/go-gcs
+module github.com/best-expendables-v2/go-gcs
 
 go 1.15
 
