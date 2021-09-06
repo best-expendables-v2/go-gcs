@@ -91,11 +91,13 @@ func (s GoGSCClient) downloadFile(download DownloadedFile) (*DownloadedFile, err
 	if err != nil {
 		return nil, err
 	}
-	err = ioutil.WriteFile(GetFullPath(download.Path, download.Name), data, 0644)
-	if err != nil {
-		return nil, err
+	if download.Location != nil {
+		err = ioutil.WriteFile(GetFullPath(download.Location.Path, download.Location.Name), data, 0644)
+		if err != nil {
+			return nil, err
+		}
 	}
-	download.Data = &data
+	download.Data = data
 	return &download, nil
 }
 
@@ -108,12 +110,6 @@ func (s GoGSCClient) removeFile(objectName string) error {
 }
 
 func (s GoGSCClient) DownloadFiles(downloads []DownloadedFile) error {
-	defer func() {
-		err := s.Client.Close()
-		if err != nil {
-			panic(fmt.Errorf("error during closing connection: %v", err))
-		}
-	}()
 	for k, download := range downloads {
 		result, err := s.downloadFile(download)
 		if err != nil {
@@ -125,12 +121,6 @@ func (s GoGSCClient) DownloadFiles(downloads []DownloadedFile) error {
 }
 
 func (s GoGSCClient) RemoveFiles(objectNames []string) error {
-	defer func() {
-		err := s.Client.Close()
-		if err != nil {
-			panic(fmt.Errorf("error during closing connection: %v", err))
-		}
-	}()
 	for _, objectName := range objectNames {
 		err := s.removeFile(objectName)
 		if err != nil {
@@ -160,14 +150,8 @@ func (s GoGSCClient) CloneFile(sourceName, destinationName string, isRemoveSourc
 }
 
 func (s GoGSCClient) ListFile(path string) ([]string, error) {
-	defer func() {
-		err := s.Client.Close()
-		if err != nil {
-			panic(fmt.Errorf("error during closing connection: %v", err))
-		}
-	}()
 	q := storage.Query{
-		Prefix:    path,
+		Prefix: path,
 	}
 	var names []string
 	it := s.Client.Bucket(s.Bucket).Objects(s.Context, &q)

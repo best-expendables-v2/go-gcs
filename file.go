@@ -21,14 +21,13 @@ type UploadedFile struct {
 	ObjectAttrs *storage.ObjectAttrs
 }
 
-// DownloadedFile is used when downloading file from Google Could Storage (GCS).
-// Object is the object path that provided from GCS.
-// Name is the file name that you wanted to save locally.
-// Path is where do you want to have your file stored. It should be a full path.
-// Data is raw bytes.
 type DownloadedFile struct {
-	Object string
-	Name   string
-	Path   string
-	Data   *[]byte
+	Object   string
+	Location *FileLocation
+	Data     []byte
+}
+
+type FileLocation struct {
+	Name string
+	Path string
 }
