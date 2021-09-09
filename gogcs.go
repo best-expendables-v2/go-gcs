@@ -3,7 +3,6 @@ package gogcs
 import (
 	"cloud.google.com/go/storage"
 	"context"
-	"fmt"
 	"google.golang.org/api/iterator"
 	"io"
 	"io/ioutil"
@@ -82,12 +81,6 @@ func (s GoGSCClient) downloadFile(download DownloadedFile) (*DownloadedFile, err
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		err := rc.Close()
-		if err != nil {
-			panic(fmt.Errorf("error 2 %v", err))
-		}
-	}()
 	data, err := ioutil.ReadAll(rc)
 	if err != nil {
 		return nil, err
@@ -132,12 +125,6 @@ func (s GoGSCClient) RemoveFiles(objectNames []string) error {
 }
 
 func (s GoGSCClient) CloneFile(sourceName, destinationName string, isRemoveSource bool) error {
-	defer func() {
-		err := s.Client.Close()
-		if err != nil {
-			panic(fmt.Errorf("error during closing connection: %v", err))
-		}
-	}()
 	src := s.Client.Bucket(s.Bucket).Object(sourceName)
 	dst := s.Client.Bucket(s.Bucket).Object(destinationName)
 	_, err := dst.CopierFrom(src).Run(s.Context)

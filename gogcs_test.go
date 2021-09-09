@@ -73,7 +73,7 @@ func TestGoGSCClient_ListFiles(t *testing.T) {
 		return
 	}
 
-	files, err := gcsClient.ListFile("")
+	files, err := gcsClient.ListFile("new")
 	if err != nil {
 		fmt.Printf("[Error] cannot list files %v \n", err)
 		return
