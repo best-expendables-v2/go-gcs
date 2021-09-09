@@ -31,3 +31,9 @@ type FileLocation struct {
 	Name string
 	Path string
 }
+
+type ListFile struct {
+	Name string
+	Url  string
+	Size int64
+}

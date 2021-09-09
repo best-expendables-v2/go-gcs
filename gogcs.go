@@ -14,7 +14,8 @@ type GoGCSClient interface {
 	DownloadFiles(downloads []DownloadedFile) error
 	RemoveFiles(objectNames []string) error
 	CloneFile(sourceName, destinationName string, isRemoveSource bool) error
-	ListFile(path string) ([]string, error)
+	ListFile(path string) ([]ListFile, error)
+	GetBaseUrl() string
 }
 
 type GoGSCClient struct {
@@ -149,11 +150,11 @@ func (s GoGSCClient) CloneFile(sourceName, destinationName string, isRemoveSourc
 	return nil
 }
 
-func (s GoGSCClient) ListFile(path string) ([]string, error) {
+func (s GoGSCClient) ListFile(path string) ([]ListFile, error) {
 	q := storage.Query{
 		Prefix: path,
 	}
-	var names []string
+	var files []ListFile
 	it := s.Client.Bucket(s.Bucket).Objects(s.Context, &q)
 	for {
 		attrs, err := it.Next()
@@ -163,7 +164,15 @@ func (s GoGSCClient) ListFile(path string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		names = append(names, attrs.Name)
+		files = append(files, ListFile{
+			Name: attrs.Name,
+			Url:  ObjectToUrl(s.BaseUrl, attrs),
+			Size: attrs.Size,
+		})
 	}
-	return names, nil
+	return files, nil
+}
+
+func (s GoGSCClient) GetBaseUrl() string {
+	return s.BaseUrl
 }
