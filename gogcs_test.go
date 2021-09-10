@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"time"
 )
 
 var (
@@ -120,18 +119,10 @@ func TestGoGSCClient_UploadFiles(t *testing.T) {
 		fmt.Printf("[Error] Init gcs client %v \n", err)
 		return
 	}
-	downloadFile := []DownloadedFile{{
-		Object: "new/STOCK 09072021.csv",
-	}}
-	err = gcsClient.DownloadFiles(downloadFile)
-	if err != nil {
-		fmt.Printf("[Error] download file %v \n", err)
-		return
-	}
 	file := File{
 		Path:     "",
-		Name:     "test" + time.Now().String() + ".csv",
-		Body:     bytes.NewReader(downloadFile[0].Data),
+		Name:     "data.csv",
+		Body:     bytes.NewBufferString("this is a test"),
 		IsPublic: true,
 	}
 	_, err = gcsClient.UploadFiles([]File{file})

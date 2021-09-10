@@ -43,7 +43,7 @@ func NewGCSClient(ctx context.Context) (*GoGSCClient, error) {
 }
 
 func (s GoGSCClient) UploadFiles(files []File) ([]UploadedFile, error) {
-	bh := s.Client.Bucket(s.Bucket).UserProject(s.ProjectID)
+	bh := s.Client.Bucket(s.Bucket)
 	var results []UploadedFile
 	for _, file := range files {
 		obj := bh.Object(GetFullPath(file.Path, file.Name))
