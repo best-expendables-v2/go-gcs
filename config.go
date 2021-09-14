@@ -1,7 +1,6 @@
 package gogcs
 
 import (
-	"github.com/best-expendables-v2/logger"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -15,7 +14,7 @@ type GCSConfig struct {
 func LoadGSCConfig() GCSConfig {
 	var config GCSConfig
 	if err := godotenv.Load(); err != nil {
-		logger.Error(err)
+		//logger.Error(err)
 	}
 	envconfig.MustProcess("", &config)
 	return config
