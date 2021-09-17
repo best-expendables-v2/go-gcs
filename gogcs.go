@@ -3,9 +3,12 @@ package gogcs
 import (
 	"cloud.google.com/go/storage"
 	"context"
+	"github.com/pkg/errors"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"io"
 	"io/ioutil"
+	"time"
 )
 
 type GoGCSClient interface {
@@ -15,30 +18,31 @@ type GoGCSClient interface {
 	CloneFile(sourceName, destinationName string, isRemoveSource bool) error
 	ListFile(path string) ([]ListFile, error)
 	GetBaseUrl() string
+	GetSignedURL(objectName string, expired time.Duration) (string, error)
 }
 
 type GoGSCClient struct {
-	Client    *storage.Client
-	ProjectID string
-	Bucket    string
-	BaseUrl   string
-	Context   context.Context
+	Client         *storage.Client
+	ProjectID      string
+	Bucket         string
+	BaseUrl        string
+	ServiceAccount string
+	Context        context.Context
 }
 
 func NewGCSClient(ctx context.Context) (*GoGSCClient, error) {
 	config := LoadGSCConfig()
 	client, err := storage.NewClient(ctx)
-
 	if err != nil {
 		return nil, err
 	}
-
 	return &GoGSCClient{
-		Client:    client,
-		ProjectID: config.ProjectID,
-		Bucket:    config.Bucket,
-		BaseUrl:   config.BaseUrl,
-		Context:   ctx,
+		Client:         client,
+		ProjectID:      config.ProjectID,
+		Bucket:         config.Bucket,
+		BaseUrl:        config.BaseUrl,
+		ServiceAccount: config.ServiceAccount,
+		Context:        ctx,
 	}, nil
 }
 
@@ -162,4 +166,28 @@ func (s GoGSCClient) ListFile(path string) ([]ListFile, error) {
 
 func (s GoGSCClient) GetBaseUrl() string {
 	return s.BaseUrl
+}
+
+func (s GoGSCClient) GetSignedURL(objectName string, expired time.Duration) (string, error) {
+	jsonKey, err := ioutil.ReadFile(s.ServiceAccount)
+	if err != nil {
+		return "", errors.Wrap(err, "ioutil.ReadFile")
+
+	}
+	conf, err := google.JWTConfigFromJSON(jsonKey)
+	if err != nil {
+		return "", errors.Wrap(err, "google.JWTConfigFromJSON")
+	}
+	opts := &storage.SignedURLOptions{
+		Scheme:         storage.SigningSchemeV4,
+		Method:         "GET",
+		GoogleAccessID: conf.Email,
+		PrivateKey:     conf.PrivateKey,
+		Expires:        time.Now().Add(expired),
+	}
+	u, err := storage.SignedURL(s.Bucket, objectName, opts)
+	if err != nil {
+		return "", errors.Wrap(err, "storage.SignedURL")
+	}
+	return u, nil
 }

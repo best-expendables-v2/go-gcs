@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 )
 
 var (
@@ -66,13 +67,15 @@ func TestGoGSCClient_GSCClient(t *testing.T) {
 }
 
 func TestGoGSCClient_ListFiles(t *testing.T) {
+	now := time.Now()
+	fmt.Println(now.Format("01022006"))
 	gcsClient, err := NewGCSClient(ctx)
 	if err != nil {
 		fmt.Printf("[Error] Init gcs client %v \n", err)
 		return
 	}
 
-	files, err := gcsClient.ListFile("new")
+	files, err := gcsClient.ListFile("weekly_3pl_reports/STOCK 09072021.csv")
 	if err != nil {
 		fmt.Printf("[Error] cannot list files %v \n", err)
 		return
@@ -132,6 +135,17 @@ func TestGoGSCClient_UploadFiles(t *testing.T) {
 	}
 }
 
-
-
-
+func TestGoGSCClient_SignedURL(t *testing.T) {
+	object := "weekly_3pl_reports/STOCK 09102021.csv"
+	gcsClient, err := NewGCSClient(ctx)
+	if err != nil {
+		fmt.Printf("[Error] Init gcs client %v \n", err)
+		return
+	}
+	signedURL, err := gcsClient.GetSignedURL(object, 10 * time.Second)
+	if err != nil {
+		fmt.Printf("[Error] can not get signed url %v \n", err)
+		return
+	}
+	fmt.Printf("signed url %v\n", signedURL)
+}
