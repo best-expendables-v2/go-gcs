@@ -52,7 +52,9 @@ func (s GoGSCClient) UploadFiles(files []File) ([]UploadedFile, error) {
 	for _, file := range files {
 		obj := bh.Object(GetFullPath(file.Path, file.Name))
 		w := obj.NewWriter(s.Context)
-
+		if file.ContentType != "" {
+			w.ContentType = file.ContentType
+		}
 		if _, err := io.Copy(w, file.Body); err != nil {
 			return results, err
 		}

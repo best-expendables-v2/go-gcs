@@ -126,7 +126,7 @@ func TestGoGSCClient_UploadFiles(t *testing.T) {
 		Path:     "",
 		Name:     "data.csv",
 		Body:     bytes.NewBufferString("this is a test"),
-		IsPublic: true,
+		IsPublic: false,
 	}
 	_, err = gcsClient.UploadFiles([]File{file})
 	if err != nil {
@@ -142,7 +142,7 @@ func TestGoGSCClient_SignedURL(t *testing.T) {
 		fmt.Printf("[Error] Init gcs client %v \n", err)
 		return
 	}
-	signedURL, err := gcsClient.GetSignedURL(object, 10 * time.Second)
+	signedURL, err := gcsClient.GetSignedURL(object, 10*time.Second)
 	if err != nil {
 		fmt.Printf("[Error] can not get signed url %v \n", err)
 		return

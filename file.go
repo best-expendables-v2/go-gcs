@@ -6,10 +6,11 @@ import (
 )
 
 type File struct {
-	Path     string
-	Name     string
-	Body     io.Reader
-	IsPublic bool
+	Path        string
+	Name        string
+	ContentType string
+	Body        io.Reader
+	IsPublic    bool
 }
 
 type UploadedFile struct {
