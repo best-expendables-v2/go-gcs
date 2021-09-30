@@ -4,6 +4,7 @@ import (
 	"cloud.google.com/go/storage"
 	"fmt"
 	"path"
+	"strings"
 )
 
 func ObjectToUrl(baseUrl string, objAttrs *storage.ObjectAttrs) string {
@@ -23,5 +24,5 @@ func GetFullPath(path string, name string) string {
 }
 
 func GetFileExtension(fileName string) string {
-	return path.Ext(fileName)
+	return strings.ToLower(path.Ext(fileName))
 }

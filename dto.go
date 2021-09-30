@@ -7,7 +7,7 @@ import (
 
 var (
 	MapExtensionWithContentType = map[string]string{
-		"csv": "text/csv",
+		".csv": "text/csv",
 	}
 )
 

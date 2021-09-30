@@ -52,7 +52,7 @@ func (s GoGSCClient) UploadFiles(files []File) ([]UploadedFile, error) {
 	for _, file := range files {
 		obj := bh.Object(GetFullPath(file.Path, file.Name))
 		w := obj.NewWriter(s.Context)
-		s.setContentType(w, file)
+		w = s.setContentType(w, file)
 		if _, err := io.Copy(w, file.Body); err != nil {
 			return results, err
 		}
@@ -80,11 +80,12 @@ func (s GoGSCClient) UploadFiles(files []File) ([]UploadedFile, error) {
 	return results, nil
 }
 
-func (s GoGSCClient) setContentType(w *storage.Writer, file File) {
+func (s GoGSCClient) setContentType(w *storage.Writer, file File) *storage.Writer {
 	fileExtension := GetFileExtension(file.Name)
 	if contentType, ok := MapExtensionWithContentType[fileExtension]; ok {
 		w.ContentType = contentType
 	}
+	return w
 }
 
 func (s GoGSCClient) downloadFile(download DownloadedFile) (*DownloadedFile, error) {
