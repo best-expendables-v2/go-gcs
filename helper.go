@@ -3,6 +3,7 @@ package gogcs
 import (
 	"cloud.google.com/go/storage"
 	"fmt"
+	"path"
 )
 
 func ObjectToUrl(baseUrl string, objAttrs *storage.ObjectAttrs) string {
@@ -19,4 +20,8 @@ func MD5BytesToString(bytes []byte) string {
 
 func GetFullPath(path string, name string) string {
 	return fmt.Sprintf("%s/%s", path, name)
+}
+
+func GetFileExtension(fileName string) string {
+	return path.Ext(fileName)
 }

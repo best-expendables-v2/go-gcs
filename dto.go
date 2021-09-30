@@ -5,12 +5,17 @@ import (
 	"io"
 )
 
+var (
+	MapExtensionWithContentType = map[string]string{
+		"csv": "text/csv",
+	}
+)
+
 type File struct {
-	Path        string
-	Name        string
-	ContentType string
-	Body        io.Reader
-	IsPublic    bool
+	Path     string
+	Name     string
+	Body     io.Reader
+	IsPublic bool
 }
 
 type UploadedFile struct {

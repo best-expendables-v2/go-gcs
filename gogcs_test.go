@@ -136,13 +136,14 @@ func TestGoGSCClient_UploadFiles(t *testing.T) {
 }
 
 func TestGoGSCClient_SignedURL(t *testing.T) {
-	object := "weekly_3pl_reports/STOCK 09102021.csv"
+	object := "tasks/64831e83-423a-48d5-b04a-7f6d47c99ad9/STOCK 09172021.csv"
+	//object = "task-templates/inventory/data.csv"
 	gcsClient, err := NewGCSClient(ctx)
 	if err != nil {
 		fmt.Printf("[Error] Init gcs client %v \n", err)
 		return
 	}
-	signedURL, err := gcsClient.GetSignedURL(object, 10*time.Second)
+	signedURL, err := gcsClient.GetSignedURL(object, 600*time.Second)
 	if err != nil {
 		fmt.Printf("[Error] can not get signed url %v \n", err)
 		return
