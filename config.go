@@ -9,7 +9,7 @@ type GCSConfig struct {
 	Bucket         string `envconfig:"GCS_BUCKET" required:"true"`
 	ProjectID      string `envconfig:"GCS_PROJECT_ID" required:"true"`
 	BaseUrl        string `envconfig:"GCS_BASE_URL" required:"true"`
-	ServiceAccount string `envconfig:"GOOGLE_APPLICATION_CREDENTIALS" required:"true"`
+	ServiceAccount string `envconfig:"GCS_SERVICE_ACCOUNT" required:"true"`
 }
 
 func LoadGSCConfig() GCSConfig {

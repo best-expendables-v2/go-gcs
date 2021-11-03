@@ -16,6 +16,7 @@ var (
 	_   = os.Setenv("GCS_PROJECT_ID", "branded-dev-sandbox")
 	_   = os.Setenv("GCS_BASE_URL", "https://cdn-staging.ganknow.com")
 	_   = os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "./staging.json")
+	_   = os.Setenv("GCS_SERVICE_ACCOUNT", "./staging.json")
 	ctx = context.Background()
 )
 
